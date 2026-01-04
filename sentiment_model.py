@@ -29,3 +29,13 @@ def predict_sentiment(text):
 
     # pred sekarang STRING: positif / negatif / netral
     return pred.capitalize()
+
+neutral_keywords = [
+    "sudah", "telah", "dikirim", "diterima", "informasi", "status"
+]
+
+for word in neutral_keywords:
+    if word in text.lower():
+        return "Netral"
+
+
