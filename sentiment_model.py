@@ -19,12 +19,24 @@ def preprocess(text):
     return stemmer.stem(text)
 
 def predict_sentiment(text):
-    clean_text = preprocess(text)
-
-    if clean_text == "":
+    if not isinstance(text, str):
         return "Netral"
 
-    vector = tfidf.transform([clean_text])
+    clean_text = preprocess(text)
+
+    # JIKA SETELAH CLEANING KOSONG
+    if clean_text == "":
+        # fallback: pakai teks asli TANPA emoji
+        fallback = emoji.replace_emoji(text, replace="").lower()
+        fallback = re.sub(r"\s+", " ", fallback).strip()
+
+        if fallback == "":
+            return "Netral"
+
+        vector = tfidf.transform([fallback])
+    else:
+        vector = tfidf.transform([clean_text])
+
     pred = model.predict(vector)[0]
 
     if pred == 1:
@@ -33,3 +45,4 @@ def predict_sentiment(text):
         return "Negatif"
     else:
         return "Netral"
+
