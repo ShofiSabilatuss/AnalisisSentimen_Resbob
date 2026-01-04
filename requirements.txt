@@ -6,3 +6,6 @@ Sastrawi
 nltk
 emoji
 joblib
+beautifulsoup4
+requests
+
