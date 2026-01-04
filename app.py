@@ -1,10 +1,8 @@
 import streamlit as st
 import pandas as pd
-import streamlit as st
-import pandas as pd
 from sentiment_model import predict_sentiment
 
-
+# KONFIGURASI HALAMAN
 st.set_page_config(
     page_title="Analisis Sentimen",
     layout="wide"
@@ -13,7 +11,7 @@ st.set_page_config(
 st.title("📊 Analisis Sentimen Komentar")
 st.write("Upload file CSV dan pilih kolom komentar untuk dianalisis.")
 
-
+# UPLOAD FILE CSV
 file = st.file_uploader(
     "Upload file CSV",
     type=["csv"]
@@ -33,11 +31,13 @@ if file is not None:
 
     if st.button("🔍 Analisis Sentimen"):
 
+        # Cleaning dasar (anti error)
         df = df.dropna(subset=[kolom_teks])
         df[kolom_teks] = df[kolom_teks].astype(str)
         df[kolom_teks] = df[kolom_teks].str.strip()
         df = df[df[kolom_teks] != ""]
 
+        # Prediksi sentimen
         df["sentimen"] = df[kolom_teks].apply(predict_sentiment)
 
         st.success("✅ Analisis sentimen selesai!")
@@ -45,6 +45,7 @@ if file is not None:
         st.subheader("📊 Hasil Analisis")
         st.dataframe(df)
 
+# AKURASI MODEL
 st.subheader("📈 Akurasi Model")
 
 try:
@@ -55,13 +56,15 @@ try:
 
     st.dataframe(df_acc[["Model", "Akurasi (%)"]])
 
+    # Grafik akurasi
+    st.bar_chart(
+        data=df_acc.set_index("Model")["Akurasi (%)"]
+    )
+
 except:
     st.warning("File hasil_akurasi_model.csv belum tersedia.")
 
-st.bar_chart(
-    data=df_acc.set_index("Model")["Akurasi (%)"]
-)
-
+# CONFUSION MATRIX
 st.subheader("📊 Confusion Matrix Tiap Model")
 
 models_cm = {
@@ -79,4 +82,3 @@ for model, img in models_cm.items():
         st.image(img)
     except:
         st.warning(f"Confusion matrix untuk {model} belum tersedia.")
-
